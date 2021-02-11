@@ -25,7 +25,7 @@ class Extras(object):
         """Delete config-context
 
         :param name: Name of the config-context to delete
-        :return: bool True if succesful otherwase delete exception
+        :return: bool True if successful otherwise delete exception
         """
         try:
             config_context_id = self.get_config_contexts(name=name)[0]['id']
@@ -37,7 +37,7 @@ class Extras(object):
         """Delete config-context
 
         :param config_context_id: config-context to delete
-        :return: bool True if succesful otherwase delete exception
+        :return: bool True if successful otherwise delete exception
         """
         return self.netbox_con.delete('/extras/config-contexts/', config_context_id)
 
@@ -64,6 +64,63 @@ class Extras(object):
         """
         return self.netbox_con.patch('/extras/config-contexts/', config_context_id, **kwargs)
 
+    def get_custom_fields(self, **kwargs):
+        """Returns all custom fields"""
+        return self.netbox_con.get('/extras/custom-fields/', **kwargs)
+
+    def create_custom_field(self, name, **kwargs):
+        """Create a custom field
+
+        :param name: custom field name
+        :param kwargs: optional fields
+        :return: netbox object if successful otherwise exception raised
+        """
+        required_fields = {"name": name}
+        return self.netbox_con.post('/extras/custom-fields/', required_fields, **kwargs)
+
+    def delete_custom_field(self, name):
+        """Delete custom field
+
+        :param name: Name of the custom field to delete
+        :return: bool True if successful otherwise delete exception
+        """
+        try:
+            custom_field_id = self.get_custom_fields(name=name)[0]['id']
+        except IndexError:
+            raise exceptions.NotFoundException('custom-field: {}'.format(name)) from None
+        return self.netbox_con.delete('/extras/custom-fields/', custom_field_id)
+
+    def delete_custom_field_by_id(self, custom_field_id):
+        """Delete custom field
+
+        :param custom_field_id: custom field to delete
+        :return: bool True if successful otherwise delete exception
+        """
+        return self.netbox_con.delete('/extras/custom-fields/', custom_field_id)
+
+    def update_custom_field(self, name, **kwargs):
+        """Update custom field
+
+        :param name: custom field name
+        :param kwargs: requests body dict
+        :return: bool True if successful otherwise raise UpdateException
+        """
+        try:
+            custom_field_id = self.get_custom_fields(name=name)[0]['id']
+        except IndexError:
+            raise exceptions.NotFoundException('custom-field: {}'.format(name)) from None
+
+        return self.netbox_con.patch('/extras/custom-fields/', custom_field_id, **kwargs)
+
+    def update_custom_field_by_id(self, custom_field_id, **kwargs):
+        """Update custom field
+
+        :param custom_field_id: custom field id
+        :param kwargs: requests body dict
+        :return: bool True if successful otherwise raise UpdateException
+        """
+        return self.netbox_con.patch('/extras/custom-fields/', custom_field_id, **kwargs)
+
     def get_tags(self, **kwargs):
         """Returns all tags"""
         return self.netbox_con.get('/extras/tags/', **kwargs)
@@ -83,7 +140,7 @@ class Extras(object):
         """Delete tag
 
         :param name: Name of the tag to delete
-        :return: bool True if succesful otherwase delete exception
+        :return: bool True if successful otherwise delete exception
         """
         try:
             tag_id = self.get_tags(name=name)[0]['id']
@@ -95,7 +152,7 @@ class Extras(object):
         """Delete tag
 
         :param tag_id: tag to delete
-        :return: bool True if succesful otherwase delete exception
+        :return: bool True if successful otherwise delete exception
         """
         return self.netbox_con.delete('/extras/tags/', tag_id)
 
